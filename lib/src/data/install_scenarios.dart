@@ -35,10 +35,14 @@ class InstallScenarios {
         id: 'install_java',
         title: 'Install Java runtime',
         command:
-            'sudo apt-get update && sudo apt-get install -y openjdk-21-jre-headless wget',
+            'sudo apt-get update && sudo apt-get install -y wget && '
+            '(sudo apt-get install -y openjdk-21-jre-headless || '
+            'sudo apt-get install -y openjdk-17-jre-headless || '
+            'sudo apt-get install -y default-jre-headless)',
         safe: false,
         dangerous: false,
-        reason: 'Installs the headless Java runtime (and wget) via apt.',
+        reason: 'Installs a headless Java runtime (tries 21, then 17, then the '
+            'distro default) plus wget.',
       ),
       ScenarioStep(
         id: 'create_dir',
@@ -241,14 +245,15 @@ class InstallScenarios {
           id: 'install_steamcmd',
           title: 'Install SteamCMD',
           command:
-              'echo steam steam/question select "I AGREE" | sudo debconf-set-selections && '
-              'echo steam steam/license note "" | sudo debconf-set-selections && '
-              'sudo DEBIAN_FRONTEND=noninteractive apt-get install -y steamcmd lib32gcc-s1',
+              'sudo apt-get install -y curl tar lib32gcc-s1 && '
+              'sudo mkdir -p /opt/steamcmd && '
+              'curl -sqL https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz '
+              '| sudo tar zxf - -C /opt/steamcmd',
           safe: false,
           dangerous: false,
           reason:
-              'Installs SteamCMD and 32-bit runtime libs, pre-accepting the '
-              'Steam license so the install does not hang on a prompt.',
+              'Installs SteamCMD from the official Valve tarball '
+              '(distro-independent) plus the 32-bit runtime libraries.',
         ),
         ScenarioStep(
           id: 'create_dir',
@@ -262,7 +267,7 @@ class InstallScenarios {
           id: 'install_game',
           title: 'Download server files',
           command:
-              'steamcmd +force_install_dir $installDir +login anonymous +app_update $appId validate +quit',
+              '/opt/steamcmd/steamcmd.sh +force_install_dir $installDir +login anonymous +app_update $appId validate +quit',
           safe: false,
           dangerous: false,
           reason: 'Downloads the dedicated server via SteamCMD (large download).',
