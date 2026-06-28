@@ -1,0 +1,11 @@
+{
+  "title": "Example Service",
+  "fields": [
+    {
+      "id": "status",
+      "label": "Status",
+      "type": "text"
+    }
+  ],
+  "actions": []
+}

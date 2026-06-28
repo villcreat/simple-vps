@@ -1,0 +1,10 @@
+id: example_service_debian
+name: Example Service Debian Installer
+os:
+  - debian
+steps:
+  - id: preview
+    title: Preview only
+    command: echo "Plugin execution is not implemented yet"
+    safe: true
+    dangerous: false

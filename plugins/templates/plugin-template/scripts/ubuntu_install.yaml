@@ -1,0 +1,50 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Установщик для Ubuntu. Каждый шаг проходит через предпросмотр (dry-run),
+# подтверждение и журнал безопасности VPS Simple.
+#
+# Поля шага:
+#   id            — уникальный идентификатор шага (для логов и отката)
+#   title         — что показывать пользователю
+#   command       — bash-команда (для Linux)
+#   safe          — true, если шаг ничего не меняет (проверка/чтение)
+#   dangerous     — true для опасных действий (требует подтверждения фразой).
+#                   ВАЖНО: даже если указать false, VPS Simple сам пометит
+#                   команду опасной, если она выглядит разрушительной (rm -rf и т.п.)
+#   reason        — почему шаг опасен / что он делает (показывается пользователю)
+#   files_changed — список файлов, которые будут изменены (для бэкапа/отката)
+#   ports_opened  — список открываемых портов (показывается в предпросмотре)
+#   rollback      — команда отката для этого шага (выполняется при «Откатить»)
+# ─────────────────────────────────────────────────────────────────────────────
+
+id: my_service_ubuntu
+name: My Service — установка (Ubuntu)
+os:
+  - ubuntu
+
+steps:
+  - id: check_os
+    title: Проверка системы
+    command: lsb_release -a
+    safe: true
+
+  - id: install_deps
+    title: Установка зависимостей
+    command: sudo apt-get update && sudo apt-get install -y curl
+    dangerous: false
+    rollback: sudo apt-get remove -y curl
+
+  - id: open_port
+    title: Открыть порт сервиса
+    command: sudo ufw allow 8080/tcp
+    dangerous: true
+    reason: Открывает публичный порт 8080.
+    ports_opened:
+      - 8080
+    rollback: sudo ufw delete allow 8080/tcp
+
+  - id: write_config
+    title: Записать конфигурацию
+    command: echo "hello" | sudo tee /etc/my-service/config.conf
+    files_changed:
+      - /etc/my-service/config.conf
+    rollback: sudo rm -f /etc/my-service/config.conf

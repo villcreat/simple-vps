@@ -1,0 +1,13 @@
+{
+  "title": "My Service",
+  "fields": [
+    { "id": "status", "label": "Статус", "type": "text" },
+    { "id": "port",   "label": "Порт",   "type": "text" },
+    { "id": "url",    "label": "Ссылка", "type": "link" }
+  ],
+  "actions": [
+    { "id": "restart", "label": "Перезапустить" },
+    { "id": "stop",    "label": "Остановить" },
+    { "id": "logs",    "label": "Логи" }
+  ]
+}

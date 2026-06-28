@@ -1,0 +1,29 @@
+# Установщик для Windows Server. Команды — PowerShell (а не bash).
+# Поля шага те же, что и в Linux-установщике.
+
+id: my_service_windows
+name: My Service — установка (Windows Server)
+os:
+  - windows_server
+
+steps:
+  - id: check_os
+    title: Проверка системы
+    command: Get-ComputerInfo | Select-Object OsName, OsVersion
+    safe: true
+
+  - id: open_port
+    title: Открыть порт сервиса
+    command: New-NetFirewallRule -DisplayName "My Service" -Direction Inbound -LocalPort 8080 -Protocol TCP -Action Allow
+    dangerous: true
+    reason: Открывает публичный порт 8080 в брандмауэре Windows.
+    ports_opened:
+      - 8080
+    rollback: Remove-NetFirewallRule -DisplayName "My Service"
+
+  - id: write_config
+    title: Записать конфигурацию
+    command: Set-Content -Path "C:\ProgramData\MyService\config.conf" -Value "hello"
+    files_changed:
+      - C:\ProgramData\MyService\config.conf
+    rollback: Remove-Item -Path "C:\ProgramData\MyService\config.conf" -Force

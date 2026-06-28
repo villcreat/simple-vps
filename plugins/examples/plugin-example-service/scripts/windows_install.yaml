@@ -1,0 +1,10 @@
+id: example_service_windows
+name: Example Service Windows Installer
+os:
+  - windows_server
+steps:
+  - id: preview
+    title: Preview only
+    command: Write-Output "Plugin execution is not implemented yet"
+    safe: true
+    dangerous: false

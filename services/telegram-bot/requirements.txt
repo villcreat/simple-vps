@@ -1,0 +1,5 @@
+# Bot runtime + the crypto needed to read the app's encrypted export file.
+requests>=2.31
+paramiko>=3.4
+cryptography>=42.0
+argon2-cffi>=23.1

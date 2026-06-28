@@ -1,0 +1,36 @@
+# Установщик для Debian. Структура идентична ubuntu_install.yaml.
+# (Команды apt/ufw чаще всего совпадают, но держим отдельный файл, чтобы
+#  при необходимости развести различия между Ubuntu и Debian.)
+
+id: my_service_debian
+name: My Service — установка (Debian)
+os:
+  - debian
+
+steps:
+  - id: check_os
+    title: Проверка системы
+    command: cat /etc/debian_version
+    safe: true
+
+  - id: install_deps
+    title: Установка зависимостей
+    command: sudo apt-get update && sudo apt-get install -y curl
+    dangerous: false
+    rollback: sudo apt-get remove -y curl
+
+  - id: open_port
+    title: Открыть порт сервиса
+    command: sudo ufw allow 8080/tcp
+    dangerous: true
+    reason: Открывает публичный порт 8080.
+    ports_opened:
+      - 8080
+    rollback: sudo ufw delete allow 8080/tcp
+
+  - id: write_config
+    title: Записать конфигурацию
+    command: echo "hello" | sudo tee /etc/my-service/config.conf
+    files_changed:
+      - /etc/my-service/config.conf
+    rollback: sudo rm -f /etc/my-service/config.conf

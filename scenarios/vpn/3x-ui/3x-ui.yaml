@@ -1,0 +1,49 @@
+id: 3x-ui
+name: 3X-UI
+category: vpn
+os:
+  - ubuntu
+  - debian
+summary: Install 3X-UI with Docker, firewall preview, and rollback hints.
+steps:
+  - id: check_os
+    title: Check Linux distribution
+    command: cat /etc/os-release
+    safe: true
+    dangerous: false
+  - id: check_docker
+    title: Check Docker availability
+    command: docker --version
+    safe: true
+    dangerous: false
+  - id: backup_firewall
+    title: Plan firewall backup
+    command: sudo mkdir -p /var/lib/vps-simple/backups/3x-ui && sudo ufw status verbose > /var/lib/vps-simple/backups/3x-ui/ufw.txt
+    safe: false
+    dangerous: false
+    files_changed:
+      - /var/lib/vps-simple/backups/3x-ui/ufw.txt
+  - id: open_panel_port
+    title: Open 3X-UI panel port
+    command: sudo ufw allow 2053/tcp
+    safe: false
+    dangerous: true
+    reason: Opens public TCP port 2053.
+    ports_opened:
+      - 2053
+    rollback: sudo ufw delete allow 2053/tcp
+  - id: create_compose
+    title: Create Docker Compose file
+    command: write /opt/3x-ui/docker-compose.yml
+    safe: false
+    dangerous: true
+    reason: Writes service files under /opt/3x-ui.
+    files_changed:
+      - /opt/3x-ui/docker-compose.yml
+    rollback: sudo rm -rf /opt/3x-ui
+  - id: start_service
+    title: Start 3X-UI container
+    command: cd /opt/3x-ui && sudo docker compose up -d
+    safe: false
+    dangerous: false
+    rollback: cd /opt/3x-ui && sudo docker compose down

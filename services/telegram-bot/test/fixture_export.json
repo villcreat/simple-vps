@@ -1,0 +1,11 @@
+{
+  "format": "vps-simple-export",
+  "version": 1,
+  "kdf": "argon2id",
+  "salt": "jike+0kWlWICd0UIzfpEOg==",
+  "payload": {
+    "nonce": "FuiicRoQX8h2wXxH",
+    "cipher": "vHm9NXxYwCYipxXAOAa22YobTAyrfw6T1RofmdrHeMSiH/ViO6CK4a/m+rMT2jkmSOFECTb26/BJ6W0FFeh76x00Gf2B6VI2N45+BU8as62WbnAcUfUn2c/vCjzk+SSuTwOp/XNtcWMnNBowIynO1bTTLc2lz5xZ+jB37a8QZSY2pppe47Pwv5wQOuPDSCQwISlxH5FStiK3PtrpTlsGtyTzVWyLyjypUacksqN2k+N4nE9yD2G7X1ehFhlwmFyGufbE3UlSJHWvmAhBJ3vNfMkpoY4v+gd8RZW2sQER46UIZNuSZz21revAIl+J3lKRv/4cqHsxEKOOc0O2p0R5URmIqyUzAq5DyAj9I8wb0kyZYWU74foVa7m8hHqNlQgsa9SlxuD8GqvqSt38MhyIh6FLd6Q=",
+    "mac": "IfnY+KAMXt/iJrKnCvst/A=="
+  }
+}

@@ -1,0 +1,7 @@
+id: plugin-example-service
+name: Example Service Plugin
+version: 0.1.0
+entry:
+  ubuntu: scripts/ubuntu_install.yaml
+  debian: scripts/debian_install.yaml
+  windows: scripts/windows_install.yaml
