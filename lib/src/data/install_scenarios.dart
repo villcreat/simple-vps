@@ -35,10 +35,10 @@ class InstallScenarios {
         id: 'install_java',
         title: 'Install Java runtime',
         command:
-            'sudo apt-get update && sudo apt-get install -y openjdk-21-jre-headless',
+            'sudo apt-get update && sudo apt-get install -y openjdk-21-jre-headless wget',
         safe: false,
         dangerous: false,
-        reason: 'Installs the headless Java runtime via apt.',
+        reason: 'Installs the headless Java runtime (and wget) via apt.',
       ),
       ScenarioStep(
         id: 'create_dir',

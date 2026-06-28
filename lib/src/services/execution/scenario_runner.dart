@@ -136,6 +136,18 @@ class ScenarioRunner {
         }
 
         if (exitCode != 0) {
+          if (step.safe) {
+            // A read-only check failed (e.g. a tool isn't installed yet). That
+            // is not fatal: checks are informational and a later step installs
+            // whatever is missing. Note it and keep going.
+            yield ExecutionEvent.step(step.id, StepStatus.skipped);
+            yield ExecutionEvent.log(
+              'Check "${step.title}" returned $exitCode; continuing '
+              '(a later step will install what is needed).',
+              stepId: step.id,
+            );
+            continue;
+          }
           yield ExecutionEvent.step(step.id, StepStatus.failed);
           yield ExecutionEvent.errorLine(
             'Step "${step.title}" failed with exit code $exitCode.',

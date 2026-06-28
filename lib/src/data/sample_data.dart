@@ -120,7 +120,7 @@ class SampleData {
         id: 'ensure_docker',
         title: 'Ensure Docker is installed',
         command:
-            'docker --version || (curl -fsSL https://get.docker.com -o /tmp/get-docker.sh && sudo sh /tmp/get-docker.sh)',
+            'docker --version || (sudo apt-get update && sudo apt-get install -y curl && curl -fsSL https://get.docker.com -o /tmp/get-docker.sh && sudo sh /tmp/get-docker.sh)',
         safe: false,
         dangerous: true,
         reason:
