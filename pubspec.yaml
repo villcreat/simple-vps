@@ -1,0 +1,31 @@
+name: vps_simple
+description: A safe cross-platform VPS management app scaffold.
+publish_to: "none"
+version: 0.2.0+2
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  # Pure-Dart SSH client so the same code runs on desktop and Android.
+  dartssh2: ^2.9.0
+  # Argon2id key derivation + AES-256-GCM for the encrypted secret vault.
+  cryptography: ^2.7.0
+  # Parses plugin manifests and installer recipes (plugin.yaml / scripts/*.yaml).
+  yaml: ^3.1.2
+  # Resolves a writable per-app directory on every platform so the encrypted
+  # vault and local store persist (critical for Android, where env vars don't).
+  path_provider: ^2.1.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+  assets:
+    - scenarios/vpn/3x-ui/3x-ui.yaml

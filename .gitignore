@@ -1,0 +1,33 @@
+# Flutter and Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+build/
+coverage/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Local app data and secrets
+vps_simple_store.json
+*.secret
+*.key
+*.pem
+*.p12
+*.pfx
+*.env
+
+# Installer output
+windows/installer/installer_output/
+dist/
+
+# Python (telegram-bot)
+__pycache__/
+*.pyc
+
+# OS
+.DS_Store
+Thumbs.db

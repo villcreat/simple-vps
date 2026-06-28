@@ -1,0 +1,16 @@
+# Normalize line endings: store text as LF in the repo, check out native on Windows.
+* text=auto
+
+# Keep these as LF even on Windows (scripts / CI / configs).
+*.sh text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.dart text eol=lf
+
+# Binary assets — never touch.
+*.png binary
+*.ico binary
+*.jpg binary
+*.jpeg binary
+*.keystore binary
+*.jks binary
