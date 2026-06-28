@@ -1,0 +1,99 @@
+name: Build APK & Windows installer
+
+# Собирает Android APK и Windows-установщик.
+# - на push в main / в PR: собирает и кладёт результат в Artifacts;
+# - на тег вида v1.2.3: дополнительно создаёт GitHub Release с файлами.
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  android:
+    name: Android APK
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+      - run: flutter build apk --release
+
+      - name: Rename APK
+        run: |
+          mkdir -p dist
+          cp build/app/outputs/flutter-apk/app-release.apk dist/VPS-Simple.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vps-simple-apk
+          path: dist/VPS-Simple.apk
+
+  windows:
+    name: Windows installer
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - run: flutter config --enable-windows-desktop
+      - run: flutter pub get
+      - run: flutter build windows --release
+
+      - name: Install Inno Setup
+        run: choco install innosetup --no-progress -y
+
+      - name: Build installer
+        shell: pwsh
+        run: |
+          $release = Get-ChildItem -Path build/windows -Recurse -Directory |
+            Where-Object { $_.FullName -match 'runner\\Release$' } |
+            Select-Object -First 1
+          if (-not $release) { throw "Release-папка не найдена" }
+          Write-Host "Release: $($release.FullName)"
+          $version = (Get-Content pubspec.yaml | Select-String '^version:').ToString().Split(':')[1].Trim().Split('+')[0]
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" `
+            "/DMyAppSrc=$($release.FullName)" `
+            "/DMyAppVersion=$version" `
+            windows/installer/vps_simple_installer.iss
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vps-simple-windows-installer
+          path: windows/installer/installer_output/*.exe
+
+  release:
+    name: Publish release
+    needs: [android, windows]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            artifacts/vps-simple-apk/*.apk
+            artifacts/vps-simple-windows-installer/*.exe
+          generate_release_notes: true

@@ -136,7 +136,7 @@ class SampleData {
         id: 'backup_firewall',
         title: 'Plan firewall backup',
         command:
-            'sudo mkdir -p /var/lib/vps-simple/backups/3x-ui && sudo ufw status verbose > /var/lib/vps-simple/backups/3x-ui/ufw.txt',
+            'sudo apt-get install -y ufw && sudo mkdir -p /var/lib/vps-simple/backups/3x-ui && sudo ufw status verbose > /var/lib/vps-simple/backups/3x-ui/ufw.txt',
         safe: false,
         dangerous: false,
         filesChanged: ['/var/lib/vps-simple/backups/3x-ui/ufw.txt'],
@@ -146,7 +146,7 @@ class SampleData {
       ScenarioStep(
         id: 'open_panel_port',
         title: 'Open 3X-UI panel port',
-        command: 'sudo ufw allow 2053/tcp',
+        command: 'sudo apt-get install -y ufw && sudo ufw allow 2053/tcp',
         safe: false,
         dangerous: true,
         reason: 'Opens a public TCP port for the panel. User confirmation is required.',
@@ -158,7 +158,16 @@ class SampleData {
         id: 'create_compose',
         title: 'Create Docker Compose file',
         command:
-            'sudo tee /opt/3x-ui/docker-compose.yml >/dev/null <<EOF\nservices:\n  x-ui:\n    image: ghcr.io/mhsanaei/3x-ui:latest\nEOF',
+            'sudo mkdir -p /opt/3x-ui && sudo tee /opt/3x-ui/docker-compose.yml >/dev/null <<EOF\n'
+            'services:\n'
+            '  x-ui:\n'
+            '    image: ghcr.io/mhsanaei/3x-ui:latest\n'
+            '    container_name: 3x-ui\n'
+            '    network_mode: host\n'
+            '    volumes:\n'
+            '      - /opt/3x-ui/db:/etc/x-ui\n'
+            '    restart: unless-stopped\n'
+            'EOF',
         safe: false,
         dangerous: true,
         reason: 'Writes a service definition under /opt/3x-ui.',

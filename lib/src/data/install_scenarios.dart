@@ -60,14 +60,18 @@ class InstallScenarios {
       ),
       ScenarioStep(
         id: 'download_server',
-        title: 'Download server jar',
+        title: 'Download server jar (latest release)',
         command:
-            'sudo wget -O /opt/minecraft/server.jar https://launcher.mojang.com/v1/objects/SERVER_JAR_HASH/server.jar',
+            "sudo apt-get install -y curl jq wget && "
+            "V=\$(curl -s https://launchermeta.mojang.com/mc/game/version_manifest_v2.json | "
+            "jq -r '.latest.release as \$r | .versions[] | select(.id==\$r) | .url') && "
+            "S=\$(curl -s \"\$V\" | jq -r '.downloads.server.url') && "
+            "sudo wget -O /opt/minecraft/server.jar \"\$S\"",
         safe: false,
         dangerous: true,
         reason:
-            'Downloads an external server binary. Replace the URL with the jar '
-            'for the version you want.',
+            'Downloads the latest official Mojang server jar (resolved via the '
+            'version manifest). Downloads an external binary.',
         filesChanged: ['/opt/minecraft/server.jar'],
         rollbackCommand: 'sudo rm -f /opt/minecraft/server.jar',
       ),
@@ -236,10 +240,15 @@ class InstallScenarios {
         const ScenarioStep(
           id: 'install_steamcmd',
           title: 'Install SteamCMD',
-          command: 'sudo apt-get install -y steamcmd lib32gcc-s1',
+          command:
+              'echo steam steam/question select "I AGREE" | sudo debconf-set-selections && '
+              'echo steam steam/license note "" | sudo debconf-set-selections && '
+              'sudo DEBIAN_FRONTEND=noninteractive apt-get install -y steamcmd lib32gcc-s1',
           safe: false,
           dangerous: false,
-          reason: 'Installs SteamCMD and 32-bit runtime libs.',
+          reason:
+              'Installs SteamCMD and 32-bit runtime libs, pre-accepting the '
+              'Steam license so the install does not hang on a prompt.',
         ),
         ScenarioStep(
           id: 'create_dir',
@@ -403,7 +412,7 @@ class InstallScenarios {
         const ScenarioStep(
           id: 'open_port',
           title: 'Open HTTP port',
-          command: 'sudo ufw allow 80/tcp',
+          command: 'sudo apt-get install -y ufw && sudo ufw allow 80/tcp',
           safe: false,
           dangerous: true,
           reason: 'Opens public TCP port 80.',
