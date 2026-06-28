@@ -11,11 +11,13 @@ steps:
     command: cat /etc/os-release
     safe: true
     dangerous: false
-  - id: check_docker
-    title: Check Docker availability
-    command: docker --version
-    safe: true
-    dangerous: false
+  - id: ensure_docker
+    title: Ensure Docker is installed
+    command: docker --version || (curl -fsSL https://get.docker.com -o /tmp/get-docker.sh && sudo sh /tmp/get-docker.sh)
+    safe: false
+    dangerous: true
+    reason: Installs Docker via the official get.docker.com script if it is not already present.
+    rollback: sudo apt-get remove -y docker-ce docker-ce-cli containerd.io docker-compose-plugin || true
   - id: backup_firewall
     title: Plan firewall backup
     command: sudo mkdir -p /var/lib/vps-simple/backups/3x-ui && sudo ufw status verbose > /var/lib/vps-simple/backups/3x-ui/ufw.txt

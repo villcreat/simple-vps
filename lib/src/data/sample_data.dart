@@ -117,12 +117,20 @@ class SampleData {
         reason: 'Reads OS metadata to choose the correct installer branch.',
       ),
       ScenarioStep(
-        id: 'check_docker',
-        title: 'Check Docker availability',
-        command: 'docker --version',
-        safe: true,
-        dangerous: false,
-        reason: 'Verifies whether Docker is already installed.',
+        id: 'ensure_docker',
+        title: 'Ensure Docker is installed',
+        command:
+            'docker --version || (curl -fsSL https://get.docker.com -o /tmp/get-docker.sh && sudo sh /tmp/get-docker.sh)',
+        safe: false,
+        dangerous: true,
+        reason:
+            'Installs Docker via the official get.docker.com script if it is '
+            'not already present. Downloads and runs an external script.',
+        rollbackHint:
+            'Docker was installed by this step; remove it with apt if it is no '
+            'longer needed.',
+        rollbackCommand:
+            'sudo apt-get remove -y docker-ce docker-ce-cli containerd.io docker-compose-plugin || true',
       ),
       ScenarioStep(
         id: 'backup_firewall',
